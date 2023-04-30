@@ -1,17 +1,22 @@
 <?php 
-    function is_submitted($counter) {
+    function is_submitted($ingredient_counter, $direction_counter) {
         $check1 = isset(
             $_POST['name'],
-            $_POST['pictureURL'],
-            $_POST['directions'],
+            $_POST['pictureURL']
         );
 
         if (!$check1) {
             return false;
         }
 
-        for ($i = 1; $i < $counter + 1; $i++) {
+        for ($i = 1; $i < $ingredient_counter + 1; $i++) {
             if (!isset($_POST["ingredient$i"])) {
+                return false;
+            }
+        }
+
+        for ($i = 1; $i < $direction_counter + 1; $i++) {
+            if (!isset($_POST["direction$i"])) {
                 return false;
             }
         }
@@ -33,7 +38,7 @@
     
     function recipe_exists($db, $recipe_name) {
         foreach ($db as $data) {
-            if ($data['name'] === $recipe_name) {
+            if (strtolower($data['name']) === strtolower($recipe_name)) {
                 return true;
             }
             

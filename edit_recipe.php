@@ -20,11 +20,11 @@
     ?>
     <div class="container" style="height: 100vh;">
         <form class="d-flex flex-column justify-content-center align-items-center" id="input_form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
-            <div>Create Recipe</div>
+            <div>Edit Recipe</div>
             <div>Name</div>
-            <input type="text" name="name" />
+            <input type="text" name="name" value="<?php echo isset($_POST['name']) ? $_POST['name'] : ''?>" readonly="readonly"/>
             <div>Image URL</div>
-            <input type="text" name="pictureURL" />
+            <input type="text" name="pictureURL" value="<?php echo isset($_POST['pictureURL']) ? $_POST['pictureURL'] : ''?>"/>
             <?php
                 $ingredient_counter = 5;
                 $direction_counter = 5;
@@ -83,15 +83,6 @@
                     <button type='submit' class='btn btn-primary' name='remove_direction' value='$direction_counter, $ingredient_counter'>-</button>
                 ";
             ?>
-            <div>
-                <input class="d-inline" type="checkbox" name="public" value="checked" />
-                <div class="d-inline">Public</div> 
-            </div>
-            <div>
-                <input class="d-inline" type="checkbox" name="favorite" value="checked" />
-                <div class="d-inline" >Favorite</div>
-            </div>
-            
             <div class="feedback">
                 <?php    
                     if (!isset($_SESSION['username'])) {
@@ -130,27 +121,25 @@
                             $favorite
                         );
                         
-                        if (!recipe_exists($recipe_db, $recipe->get_name())) {
+                        if (recipe_exists($recipe_db, $recipe->get_name()) && isset($_POST['clicked'])) {
                             $response = santize_input($recipe);
                             if ($response === true) {
-                                $sql = "INSERT INTO recipes (userid, name, pictureURL, ingredients, directions, public, favorite) VALUES (?, ?, ?, ?, ?, ?, ?)";
-                                sql_query($conn, $sql, 'issssii', 
-                                    [
-                                        $recipe->get_userid(), 
-                                        $recipe->get_name(), 
-                                        $recipe->get_pictureURL(), 
-                                        join(",", $recipe->get_ingredients()), 
-                                        join(".", $recipe->get_directions()), 
-                                        $recipe->get_public(), 
-                                        $recipe->get_favorite()
-                                    ]);
+                                // $sql = "UPDATE recipes (userid, name, pictureURL, ingredients, directions, public, favorite) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                                $name = $recipe->get_name();
+                                $sql = "UPDATE recipes SET pictureURL = (?) WHERE name = '$name'";
+                                sql_query($conn, $sql, 's', [$recipe->get_pictureURL()]);
+
+                                $sql = "UPDATE recipes SET ingredients = (?) WHERE name = '$name'";
+                                sql_query($conn, $sql, 's', [join(",", $recipe->get_ingredients())]);
+
+                                $sql = "UPDATE recipes SET directions = (?) WHERE name = '$name'";
+                                sql_query($conn, $sql, 's', [join(".", $recipe->get_directions())]);
+
+                                header('Location: home.php');
                                 echo "Recipe Creation Successful!";
-                                header('Location: ./home.php');
                             } else {
                                 echo $response;
                             } 
-                        } else {
-                            echo "Recipe already exists";
                         }
                     }
                 ?>

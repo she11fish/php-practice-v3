@@ -28,7 +28,7 @@
                     $data['public'],
                     $data['favorite'],
                 );
-                if (!$recipe->get_public()) {
+                if (!$recipe->get_favorite()) {
                     continue;
                 }
                 echo '<div class="card container my-5">  
