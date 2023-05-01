@@ -14,9 +14,11 @@
     <?php 
         include "navbar.php";
         include "recipe_connection.php";
+        include "user_connection.php";
+        include "recipe_tools.php";
         include "recipe.php";
     ?>
-    <div class="container" style="height: 100vh;">
+    <div class="container bg-light">
         <?php
             foreach ($recipe_db as $data) {
                 $recipe = new Recipe(
@@ -31,12 +33,27 @@
                 if (!$recipe->get_public()) {
                     continue;
                 }
-                echo '<div class="card container my-5">  
-                <div class="row">
-                    <div class="col fs-1 d-flex justify-content-center align-items-center">' . $recipe->get_name() . '</div>';
-                echo '<div class="row">
-                    <img class="col" src=' . $recipe->get_pictureURL() . ' alt="Recipe Image" style="width: 25%"/>
-                    '; 
+                $name = $recipe->get_name();
+                $imageURL = $recipe->get_pictureURL();
+                $public = $recipe->get_public();
+                $favorite = $recipe->get_favorite();
+                echo "<div class='card container my-5 p-3'>";
+                $id = get_user_by_id($db, $_SESSION['username']);
+                if ($recipe->get_userid() == $id) {
+                    echo "<div class='btn-group d-flex justify-content-end'>
+                                <div class='row'>
+                                    <form action='toggle_public.php' method='post'>
+                                       <button type='submit' class='btn btn-danger' name='public' value='$public,$name'>Private</button>
+                                    </form>
+                                </div>
+                                
+                            </div>";
+                }
+                echo "<div class='row'>
+                    <div class='col fs-1 d-flex justify-content-center align-items-center'>" . $recipe->get_name() . "</div>";
+                echo "<div class='row'>
+                    <img class='col' src=" . $recipe->get_pictureURL() . " alt='Recipe Image' style='width: 25%'/>
+                    "; 
                     echo '<div class="col">
                     <div class="fs-1">Ingredients</div>
                     <ul class="fs-5">';
