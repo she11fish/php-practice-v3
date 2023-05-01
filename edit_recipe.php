@@ -18,7 +18,7 @@
         include "recipe_tools.php";
         include "recipe.php";
     ?>
-    <div class="container d-flex flex-column justify-content-center align-items-center">
+    <div class="container d-flex flex-column justify-content-center align-items-center mt-3">
         <div class='fs-1'>Edit Recipe</div>
         <form class="d-flex w-50 justify-content-evenly align-items-start" id="input_form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
             <div>
@@ -88,66 +88,68 @@
                 ?>
             </div>
         </form>
-        <div class="feedback">
-            <?php    
-                if (!isset($_SESSION['username'])) {
-                    header("Location: home.php");
-                }
-            ?>
-            <?php
-                if (is_submitted($ingredient_counter, $direction_counter)) {
-                    $public = 0;
-                    $favorite = 0;
-                    if (isset($_POST['public'])) {
-                        $public = 1;
+        <form id="input_form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
+            <div class="feedback">
+                <?php    
+                    if (!isset($_SESSION['username'])) {
+                        header("Location: home.php");
                     }
-                    if (isset($_POST['favorite'])) {
-                        $favorite = 1;
+                ?>
+                <?php
+                    if (is_submitted($ingredient_counter, $direction_counter)) {
+                        $public = 0;
+                        $favorite = 0;
+                        if (isset($_POST['public'])) {
+                            $public = 1;
+                        }
+                        if (isset($_POST['favorite'])) {
+                            $favorite = 1;
+                        }
+
+                        $ingredients = array();
+                        for ($i = 1; $i < $ingredient_counter + 1; $i++) {
+                            array_push($ingredients, $_POST["ingredient$i"]);
+                        }
+                        $ingredients = join(",", $ingredients);
+
+                        $directions = array();
+                        for ($i = 1; $i < $direction_counter + 1; $i++) {
+                            array_push($directions, $_POST["direction$i"]);
+                        }
+
+                        $directions = join(".", $directions);
+                        $recipe = new Recipe(get_user_by_id($db, $_SESSION['username']),
+                            $_POST['name'],
+                            $_POST['pictureURL'],
+                            $ingredients,
+                            $directions,
+                            $public,
+                            $favorite
+                        );
+                        
+                        if (recipe_exists($recipe_db, $recipe->get_name()) && isset($_POST['clicked'])) {
+                            $response = santize_input($recipe);
+                            if ($response === true) {                                $name = $recipe->get_name();
+                                $sql = "UPDATE recipes SET pictureURL = (?) WHERE name = '$name'";
+                                sql_query($conn, $sql, 's', [$recipe->get_pictureURL()]);
+
+                                $sql = "UPDATE recipes SET ingredients = (?) WHERE name = '$name'";
+                                sql_query($conn, $sql, 's', [join(",", $recipe->get_ingredients())]);
+
+                                $sql = "UPDATE recipes SET directions = (?) WHERE name = '$name'";
+                                sql_query($conn, $sql, 's', [join(".", $recipe->get_directions())]);
+
+                                header('Location: home.php');
+                                echo "Recipe Creation Successful!";
+                            } else {
+                                echo $response;
+                            } 
+                        }
                     }
-
-                    $ingredients = array();
-                    for ($i = 1; $i < $ingredient_counter + 1; $i++) {
-                        array_push($ingredients, $_POST["ingredient$i"]);
-                    }
-                    $ingredients = join(",", $ingredients);
-
-                    $directions = array();
-                    for ($i = 1; $i < $direction_counter + 1; $i++) {
-                        array_push($directions, $_POST["direction$i"]);
-                    }
-
-                    $directions = join(".", $directions);
-                    $recipe = new Recipe(get_user_by_id($db, $_SESSION['username']),
-                        $_POST['name'],
-                        $_POST['pictureURL'],
-                        $ingredients,
-                        $directions,
-                        $public,
-                        $favorite
-                    );
-                    
-                    if (recipe_exists($recipe_db, $recipe->get_name()) && isset($_POST['clicked'])) {
-                        $response = santize_input($recipe);
-                        if ($response === true) {                                $name = $recipe->get_name();
-                            $sql = "UPDATE recipes SET pictureURL = (?) WHERE name = '$name'";
-                            sql_query($conn, $sql, 's', [$recipe->get_pictureURL()]);
-
-                            $sql = "UPDATE recipes SET ingredients = (?) WHERE name = '$name'";
-                            sql_query($conn, $sql, 's', [join(",", $recipe->get_ingredients())]);
-
-                            $sql = "UPDATE recipes SET directions = (?) WHERE name = '$name'";
-                            sql_query($conn, $sql, 's', [join(".", $recipe->get_directions())]);
-
-                            header('Location: home.php');
-                            echo "Recipe Creation Successful!";
-                        } else {
-                            echo $response;
-                        } 
-                    }
-                }
-            ?>
-        </div>
-        <button type="submit" name="clicked" value="<?php echo $ingredient_counter . "," . $direction_counter ?>" class="btn btn-primary mt-2">Submit</button>
+                ?>
+            </div>
+            <button type="submit" name="clicked" value="<?php echo $ingredient_counter . "," . $direction_counter ?>" class="btn btn-primary mt-2">Submit</button>
+        </form>
     </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

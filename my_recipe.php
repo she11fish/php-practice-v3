@@ -20,7 +20,9 @@
     ?>
     <div class='container d-flex flex-column align-items-center'>
         <?php
+            $empty = true;
             foreach ($recipe_db as $data) {
+                $empty = false;
                 $recipe = new Recipe(
                     $data['userid'], 
                     $data['name'], 
@@ -36,7 +38,7 @@
                 $id = get_user_by_id($db, $_SESSION['username']);
                 if ($recipe->get_userid() != $id) {
                     continue;
-                }
+                }   
                 $name = $recipe->get_name();
                 $imageURL = $recipe->get_pictureURL();
                 $public = $recipe->get_public();
@@ -46,7 +48,7 @@
                             <button class='btn btn-primary dropdown-toggle' type='button' data-bs-toggle='dropdown' aria-expanded='false'>
                                 Options
                           </button>
-                                <ul class='dropdown-menu dropdown-menu-end'>
+                                <ul class='dropdown-menu dropdown-menu-end p-0'>
                                     <form action='edit_recipe.php' method='post'>
                                     "; 
                                         $i = 1;
@@ -62,16 +64,16 @@
                                         echo "<input type='text' style='display: none;' name='clicked' value='$i,$d' />";
                                     echo "
                                         <input type='text' style='display: none;' name='pictureURL' value='$imageURL' />
-                                        <li><button type='submit' class='dropdown-item bg-info' name='name' value='$name' href='./edit_recipe.php'>Edit</button></li>
+                                        <li><button type='submit' class='dropdown-item' name='name' value='$name' href='./edit_recipe.php'>Edit</button></li>
                                     </form>";
                                     if ($public == 1) {
                                         echo "<form action='toggle_public.php' method='post'>
-                                                    <li><button type='submit' class='dropdown-item bg-danger' name='public' value='$public,$name'>Private</button></li>
+                                                    <li><button type='submit' class='dropdown-item' name='public' value='$public,$name'>Private</button></li>
                                             </form>
                                             ";
                                     } else {
                                         echo "<form action='toggle_public.php' method='post'>
-                                                    <li><button type='submit' class='dropdown-item bg-success' name='public' value='$public,$name'>Public</button></li>
+                                                    <li><button type='submit' class='dropdown-item' name='public' value='$public,$name'>Public</button></li>
                                             </form>
                                             ";
                                     }
@@ -117,6 +119,9 @@
                     </div>      
                 </div>
             </div>";
+            }
+            if ($empty == true) {
+                header("Location: create_recipe.php");
             }
         ?>
         <a class='btn btn-primary mb-5'  href='./create_recipe.php' role='button'>Create a New Recipe</a>

@@ -16,11 +16,11 @@
         include "user_connection.php";
     ?>
     <div class="container" style="height: 100vh;">
-        <form class="d-flex flex-column justify-content-center align-items-center" action="login.php" method="post">
-            <div>Login</div>
-            <div>Username</div>
+        <form class="d-flex flex-column justify-content-center align-items-center mt-3" action="login.php" method="post">
+            <div class="fs-1">Login</div>
+            <div class="fs-4">Username</div>
             <input type="text" name="username" />
-            <div>Password</div>
+            <div class="fs-4">Password</div>
             <input type="password" name="password" />
             <div class="feedback">
             <?php    
@@ -51,7 +51,7 @@
                 }
             ?>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary mt-3">Submit</button>
         </form>
     </div>
 </body>

@@ -1,9 +1,4 @@
 <div class='container d-flex flex-column justify-content-center align-items-center' style='height: 100vh;'>
-    <!-- Button trigger modal -->
-        <button type='button' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#exampleModal'>
-        Launch demo modal
-        </button>
-
         <!-- Modal -->
         <div class='modal fade' id='exampleModal' tabindex='-1' aria-labelledby='exampleModalLabel' aria-hidden='true'>
         <div class='modal-dialog'>
@@ -25,6 +20,8 @@
         </div>
         </div>
         <?php
+            include "recipe_connection.php";
+            include "recipe_tools.php";
                 if(isset($_POST['response'])) {
                     $response = explode('|', $_POST['response'])[0];
                     echo ($response);

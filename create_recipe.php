@@ -96,6 +96,7 @@
                 </div>
             </div>
         </form>
+        <form id="input_form" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
         <div class="feedback">
                 <?php    
                     if (!isset($_SESSION['username'])) {
@@ -134,7 +135,7 @@
                             $favorite
                         );
                         
-                        if (!recipe_exists($recipe_db, $recipe->get_name()) && $recipe->get_name() != "" && $recipe->get_pictureURL() != "") {
+                        if (!recipe_exists($recipe_db, $recipe->get_name())) {
                             $response = santize_input($recipe);
                             if ($response === true) {
                                 $sql = "INSERT INTO recipes (userid, name, pictureURL, ingredients, directions, public, favorite) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -148,7 +149,7 @@
                                         $recipe->get_public(), 
                                         $recipe->get_favorite()
                                     ]);
-                                header('Location: ./home.php');
+                                header('Location: home.php');
                                 echo "Recipe Creation Successful!";
                                 
                             } else {
@@ -161,6 +162,7 @@
             ?>
         </div>
         <button type="submit" name="clicked" value="<?php echo $ingredient_counter . "," . $direction_counter ?>" class="btn btn-primary my-3 fs-4">Submit</button>
+        </form>
     </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

@@ -38,8 +38,12 @@
                 $public = $recipe->get_public();
                 $favorite = $recipe->get_favorite();
                 echo "<div class='card container my-5 p-3'>";
-                $id = get_user_by_id($db, $_SESSION['username']);
-                if ($recipe->get_userid() == $id) {
+                $id = null;
+                if (isset($_SESSION['username'])) {
+                    $id = get_user_by_id($db, $_SESSION['username']);
+                }
+                
+                if ($id != null && $recipe->get_userid() == $id) {
                     echo "<div class='btn-group d-flex justify-content-end'>
                                 <div class='row'>
                                     <form action='toggle_public.php' method='post'>
